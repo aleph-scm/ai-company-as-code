@@ -1,0 +1,286 @@
+schema: paperclip/v1
+agents:
+  adversary:
+    role: general
+    icon: swords
+    capabilities: Attacks plans before budget is committed and outputs before they
+      are called done, naming the load-bearing assumption and what would falsify it;
+      no veto, but its critique blocks the target issue until answered in writing.
+    adapter:
+      config:
+        model: example-provider/example-model
+        timeoutSec: 1800
+      type: opencode_local
+    permissions:
+      canCreateAgents: true
+      canCreateSkills: true
+    permissionGrants:
+    - permissionKey: tasks:assign
+  ceo:
+    role: ceo
+    adapter:
+      config:
+        effort: high
+      type: claude_local
+    runtime:
+      heartbeat:
+        enabled: true
+        intervalSec: 43200
+    permissions:
+      canCreateAgents: true
+      canCreateSkills: true
+    permissionGrants:
+    - permissionKey: agents:configure
+    - permissionKey: skills:create
+    - permissionKey: tasks:assign
+  coder:
+    role: engineer
+    icon: code
+    capabilities: Implements coding tasks end-to-end - code, tests, CI/CD, and deployment
+      - with focused verification.
+    adapter:
+      config:
+        model: example-provider/example-model
+        timeoutSec: 2700
+      type: opencode_local
+    permissions:
+      canCreateAgents: true
+      canCreateSkills: true
+    permissionGrants:
+    - permissionKey: tasks:assign
+  coo:
+    role: general
+    icon: cog
+    capabilities: 'Owns Aleph''s information supply chain and operating rhythm: specifies
+      and routes research, records, and reporting work across Researcher, Librarian
+      and Summarizer, holds the quality bar on their output before it reaches the
+      CEO, and makes sure decisions become tickets with owners.'
+    adapter:
+      config:
+        effort: medium
+      type: claude_local
+    permissions:
+      canCreateAgents: true
+      canCreateSkills: true
+    permissionGrants:
+    - permissionKey: tasks:assign
+  cto:
+    role: cto
+    icon: crown
+    capabilities: 'Owns architecture, infrastructure and deploys. Breaks company goals
+      into well-specified engineering tickets and takes the hardest ones personally.
+      Continues to own the running system: environments, Paperclip/adapter configuration,
+      deployments and rollbacks, runtime and workspace health, error triage and first
+      response, and secrets hygiene.'
+    adapter:
+      config:
+        effort: high
+      type: claude_local
+    runtime:
+      heartbeat:
+        enabled: true
+        intervalSec: 86400
+    permissions:
+      canCreateAgents: true
+      canCreateSkills: true
+    permissionGrants:
+    - permissionKey: tasks:assign
+  designer:
+    role: designer
+    icon: gem
+    capabilities: "Owns one visual identity across example.com and blog.example.com \u2014 writes\
+      \ the type/colour/spacing system down in aleph-brain, then implements it as\
+      \ PRs on both Astro site repos."
+    adapter:
+      config:
+        model: example-provider/example-model
+        timeoutSec: 2700
+      type: opencode_local
+    permissions:
+      canCreateAgents: true
+      canCreateSkills: true
+    permissionGrants:
+    - permissionKey: tasks:assign
+  dreamer:
+    role: general
+    icon: sparkles
+    capabilities: Generates ten outward-facing what-ifs a week; originates nothing,
+      decides nothing.
+    adapter:
+      config:
+        model: example-provider/example-model
+        timeoutSec: 900
+      type: opencode_local
+    permissionGrants:
+    - permissionKey: tasks:assign
+  librarian:
+    role: general
+    icon: database
+    capabilities: 'Owns Aleph''s institutional memory: captures decisions with their
+      reasoning, maintains documentation standards, answers other agents'' context
+      questions with citations, and surfaces contradictions between records.'
+    adapter:
+      config:
+        effort: medium
+        engine: cli
+        timeoutSec: 2700
+      type: claude_local
+    runtime:
+      heartbeat:
+        enabled: true
+        intervalSec: 86400
+    permissions:
+      canCreateAgents: true
+      canCreateSkills: true
+    permissionGrants:
+    - permissionKey: tasks:assign
+  navigator:
+    role: general
+    icon: target
+    capabilities: 'Owns where Aleph goes next: reads the ideas pipeline (Dreamer,
+      Scout, Reader, idea tickets), promotes at least one idea a week into a ticket
+      with a cheapest test, a cost, a falsifier and a date, disposes of the rest in
+      one line, owns Lane D of the ALE-63 experiment portfolio, and specifies the
+      Researcher''s briefs.'
+    adapter:
+      config:
+        effort: medium
+      type: claude_local
+    permissionGrants:
+    - permissionKey: tasks:assign
+  qa:
+    role: qa
+    icon: bug
+    capabilities: Verifies every implementation against its ticket's written acceptance
+      criteria, reproduces defects, produces pass/fail findings backed by real command
+      output, and holds a security veto that forces a written answer before a change
+      ships.
+    adapter:
+      config:
+        model: example-provider/example-model
+        timeoutSec: 1800
+      type: opencode_local
+    permissions:
+      canCreateAgents: true
+      canCreateSkills: true
+    permissionGrants:
+    - permissionKey: tasks:assign
+  reader:
+    role: general
+    icon: eye
+    capabilities: Weekly release-notes digest for the services Aleph runs; five lines
+      per source.
+    adapter:
+      config:
+        model: example-provider/example-model
+        timeoutSec: 900
+      type: opencode_local
+    permissionGrants:
+    - permissionKey: tasks:assign
+  researcher:
+    role: researcher
+    icon: telescope
+    capabilities: Produces evidence-based research briefs with one recommendation,
+      sources, risks, and a cheap next validation step.
+    adapter:
+      config:
+        model: example-provider/example-model
+        timeoutSec: 1800
+      type: opencode_local
+    permissions:
+      canCreateAgents: true
+      canCreateSkills: true
+    permissionGrants:
+    - permissionKey: tasks:assign
+  scout:
+    role: general
+    icon: radar
+    capabilities: Weekly landscape scan on a rotating theme; five sourced findings
+      with links and dates.
+    adapter:
+      config:
+        model: example-provider/example-model
+        timeoutSec: 900
+      type: opencode_local
+    permissionGrants:
+    - permissionKey: tasks:assign
+  writer:
+    role: general
+    icon: message-square
+    capabilities: 'Owns the prose of everything Aleph publishes: drafts and revises
+      posts for blog.example.com, authors and enforces the voice/tone style guide in aleph-brain,
+      and verifies every technical claim against a file, commit, run log, or primary
+      source before handoff.'
+    adapter:
+      config:
+        effort: medium
+      type: claude_local
+    permissions:
+      canCreateAgents: true
+      canCreateSkills: true
+    permissionGrants:
+    - permissionKey: tasks:assign
+company:
+  logoPath: images/company-logo.png
+projects:
+  aleph:
+    icon: gem
+    color: '#8b5cf6'
+    status: in_progress
+    workspaces:
+      aleph-apps:
+        name: aleph-apps
+        defaultRef: main
+        isPrimary: true
+        repoRef: coder/ale-220-drift-sigpipe-fix
+        repoUrl: https://github.com/aleph-scm/aleph-apps
+        sourceType: git_repo
+        visibility: default
+  blog:
+    icon: globe
+    color: '#f59e0b'
+    leadAgentSlug: cto
+    status: in_progress
+    workspaces:
+      aleph-scm-aleph-brain:
+        name: aleph-scm/aleph-brain
+        metadata:
+          githubRepositoryId: '1379408425'
+        repoUrl: https://github.com/aleph-scm/aleph-brain
+        sourceType: git_repo
+        visibility: default
+      aleph-scm-awt-site:
+        name: aleph-scm/awt-site
+        metadata:
+          githubRepositoryId: '1390376110'
+        repoUrl: https://github.com/aleph-scm/awt-site
+        sourceType: git_repo
+        visibility: default
+      blog:
+        name: blog
+        defaultRef: main
+        isPrimary: true
+        repoRef: ale-152-sandbox-take-it-off-post
+        repoUrl: https://github.com/aleph-scm/blog
+        sourceType: git_repo
+        visibility: default
+schemaVersion: 7
+sidebar:
+  agents:
+  - ceo
+  - adversary
+  - coo
+  - cto
+  - navigator
+  - librarian
+  - writer
+  - coder
+  - designer
+  - qa
+  - dreamer
+  - reader
+  - researcher
+  - scout
+  projects:
+  - aleph
+  - blog

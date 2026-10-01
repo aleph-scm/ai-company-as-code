@@ -1,0 +1,196 @@
+#!/usr/bin/env bash
+# agent-bwrap: a Bubblewrap confinement shim for coding-agent CLIs.
+#
+# Wraps an arbitrary agent binary so it runs inside a Bubblewrap sandbox that
+# hides the rest of the host filesystem. It re-execs the same argv it was
+# given against the real agent binary named by AGENT_BWRAP_CMD, after
+# entering the sandbox.
+#
+# Confinement model:
+#   - workspace directory (AGENT_BWRAP_WORKSPACE): read-write
+#   - any extra paths in AGENT_BWRAP_RW: read-write (agent config/cache/state)
+#   - any extra paths in AGENT_BWRAP_RO: read-only (e.g. git credentials)
+#   - /usr and a minimal set of /etc files: read-only (enough to exec the
+#     binary and resolve DNS/TLS)
+#   - everything else on the host: not mounted, so not visible at all
+#
+# What this does NOT do: network confinement (the sandboxed process can reach
+# any network destination the host can), or prevent the agent from changing
+# its own future invocation if something outside the sandbox controls that
+# (see the README's threat model).
+#
+# All configuration is via environment variables, documented in README.md and
+# config/agent-bwrap.env.example. Set AGENT_BWRAP_CONFIG to a shell-sourceable
+# file to load config from disk instead of (or in addition to) the environment.
+set -euo pipefail
+
+if [ -n "${AGENT_BWRAP_CONFIG:-}" ]; then
+  if [ ! -r "$AGENT_BWRAP_CONFIG" ]; then
+    echo "agent-bwrap: AGENT_BWRAP_CONFIG='$AGENT_BWRAP_CONFIG' is not readable" >&2
+    exit 1
+  fi
+  # shellcheck disable=SC1090
+  source "$AGENT_BWRAP_CONFIG"
+fi
+
+BWRAP_BIN="${BWRAP_BIN:-bwrap}"
+
+# --- Required configuration -------------------------------------------------
+#
+# The wrapper refuses to start rather than silently running the agent
+# unconfined, because a missing AGENT_BWRAP_CMD or AGENT_BWRAP_WORKSPACE means
+# there is no sandbox to build.
+
+if [ -z "${AGENT_BWRAP_CMD:-}" ]; then
+  echo "agent-bwrap: AGENT_BWRAP_CMD is not set" >&2
+  echo "  Set it to the absolute path of the real agent binary to run inside" >&2
+  echo "  the sandbox. See README.md for the required configuration." >&2
+  exit 1
+fi
+if [ ! -x "$AGENT_BWRAP_CMD" ]; then
+  echo "agent-bwrap: AGENT_BWRAP_CMD='$AGENT_BWRAP_CMD' is not an executable file" >&2
+  exit 1
+fi
+
+if [ -z "${AGENT_BWRAP_WORKSPACE:-}" ]; then
+  echo "agent-bwrap: AGENT_BWRAP_WORKSPACE is not set" >&2
+  echo "  Set it to the absolute path of the read-write workspace directory" >&2
+  echo "  the agent should be confined to. See README.md." >&2
+  exit 1
+fi
+
+if ! command -v "$BWRAP_BIN" >/dev/null 2>&1; then
+  # Distinguish "absent" from "present but you may not run it": on hosts that
+  # restrict unprivileged user-namespace creation (Ubuntu 24.04's
+  # kernel.apparmor_restrict_unprivileged_userns=1 default), BWRAP_BIN is
+  # expected to point at an AppArmor-profiled copy installed for a dedicated
+  # group. `command -v` reports "not found" identically whether the binary is
+  # missing or merely unreadable/unexecutable by you, so check both cases.
+  if [ -e "$BWRAP_BIN" ]; then
+    bwrap_group=$(stat -c '%G' "$BWRAP_BIN" 2>/dev/null || id -gn)
+    echo "agent-bwrap: '$BWRAP_BIN' exists but you cannot execute it as $(id -un) (uid $(id -u))" >&2
+    echo "  It is $(stat -c '%A %U:%G' "$BWRAP_BIN" 2>/dev/null). See README.md's" >&2
+    echo "  'Host prerequisites' section for the AppArmor profile and uid model." >&2
+    if id -nG | tr ' ' '\n' | grep -qx "$bwrap_group"; then
+      echo "  You are already in the '$bwrap_group' group; check the file mode instead." >&2
+    else
+      echo "  Re-run as an account in the '$bwrap_group' group." >&2
+    fi
+  else
+    echo "agent-bwrap: BWRAP_BIN='$BWRAP_BIN' not found" >&2
+    echo "  Install bubblewrap, or point BWRAP_BIN at the profiled copy described" >&2
+    echo "  in README.md's 'Host prerequisites' section." >&2
+  fi
+  exit 127
+fi
+
+mkdir -p "$AGENT_BWRAP_WORKSPACE"
+
+bwrap_args=(
+  --die-with-parent --new-session
+  --unshare-pid --unshare-ipc --unshare-uts
+  --tmpfs / --proc /proc --dev /dev --tmpfs /tmp
+  --symlink usr/bin /bin --symlink usr/sbin /sbin
+  --symlink usr/lib /lib --symlink usr/lib64 /lib64
+)
+
+# --- Minimal read-only system surface ---------------------------------------
+#
+# /etc is allowlisted rather than bound whole, on purpose: hosts commonly keep
+# service credentials and other-process config under /etc that has no business
+# being visible to a confined agent. Add entries with AGENT_BWRAP_SYSTEM_RO
+# rather than widening this default list, unless the addition belongs on every
+# deployment of this tool.
+default_system_ro_paths=(
+  /usr
+
+  # Debian/Ubuntu "alternatives" symlink targets. Without this, dozens of
+  # entries in /usr/bin dangle inside the sandbox and report "command not
+  # found" even though /usr itself is bound — including common tools like
+  # awk, cc, vi, nc, and which. A shell script that calls one of them then
+  # fails in a way that looks like a bug in the script, not a sandbox gap.
+  /etc/alternatives
+
+  # Dynamic linker cache/config. glibc falls back to a directory search
+  # without it, so this is about matching host behaviour, not correctness.
+  /etc/ld.so.cache
+  /etc/ld.so.conf
+  /etc/ld.so.conf.d
+
+  # Host identity, as read by tooling that branches on distro.
+  /etc/os-release
+  /etc/lsb-release
+  /etc/debian_version
+  /etc/hostname
+
+  # Shell startup and terminal behaviour for anything spawning a login shell.
+  /etc/profile
+  /etc/profile.d
+  /etc/bash.bashrc
+  /etc/shells
+  /etc/inputrc
+
+  # System-wide git config, so in-sandbox git matches the host's.
+  /etc/gitconfig
+  /etc/gitattributes
+
+  # Name/port/protocol resolution and TLS trust.
+  /etc/ca-certificates
+  /etc/ssl
+  /etc/resolv.conf
+  /etc/hosts
+  /etc/nsswitch.conf
+  /etc/gai.conf
+  /etc/services
+  /etc/protocols
+
+  /etc/passwd
+  /etc/group
+  /etc/localtime
+  /etc/timezone
+)
+
+system_ro_paths=()
+if [ "${AGENT_BWRAP_NO_SYSTEM_DEFAULTS:-0}" != "1" ]; then
+  system_ro_paths+=("${default_system_ro_paths[@]}")
+fi
+if [ -n "${AGENT_BWRAP_SYSTEM_RO:-}" ]; then
+  IFS=':' read -r -a extra_system_ro <<<"$AGENT_BWRAP_SYSTEM_RO"
+  system_ro_paths+=("${extra_system_ro[@]}")
+fi
+for p in "${system_ro_paths[@]}"; do
+  [ -e "$p" ] && bwrap_args+=(--ro-bind "$p" "$p")
+done
+
+# --- Workspace and other read-write binds -----------------------------------
+
+bwrap_args+=(--bind "$AGENT_BWRAP_WORKSPACE" "$AGENT_BWRAP_WORKSPACE")
+
+if [ -n "${AGENT_BWRAP_RW:-}" ]; then
+  IFS=':' read -r -a rw_paths <<<"$AGENT_BWRAP_RW"
+  for p in "${rw_paths[@]}"; do
+    [ -z "$p" ] && continue
+    mkdir -p "$p"
+    bwrap_args+=(--bind "$p" "$p")
+  done
+fi
+
+# --- Read-only binds (e.g. git/SSH credentials) -----------------------------
+#
+# SECURITY, stated plainly: anything listed in AGENT_BWRAP_RO becomes visible
+# inside the sandbox, read-only. Typical use is a git config, an SSH key
+# directory, or a `gh` credential file, so the agent can fetch/push/open a PR.
+# The boundary this wrapper enforces is host and cross-agent isolation — other
+# processes' state, and unrelated host paths, stay invisible — it is NOT a
+# revocation of whatever the agent can already do with credentials you choose
+# to bind in. Bind only what the agent needs.
+
+if [ -n "${AGENT_BWRAP_RO:-}" ]; then
+  IFS=':' read -r -a ro_paths <<<"$AGENT_BWRAP_RO"
+  for p in "${ro_paths[@]}"; do
+    [ -z "$p" ] && continue
+    [ -e "$p" ] && bwrap_args+=(--ro-bind "$p" "$p")
+  done
+fi
+
+exec "$BWRAP_BIN" "${bwrap_args[@]}" --chdir "$AGENT_BWRAP_WORKSPACE" -- "$AGENT_BWRAP_CMD" "$@"

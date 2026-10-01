@@ -1,0 +1,37 @@
+# Install to /etc/sudoers.d/paperclip-restart (root:root, chmod 440):
+#   sudo install -m 440 -o root -g root \
+#     host/sudoers.d/paperclip-restart /etc/sudoers.d/paperclip-restart
+#   sudo visudo -cf /etc/sudoers.d/paperclip-restart   # validate
+#
+# Source: aleph-scm/prod, sudoers.d/paperclip-restart. Copied verbatim.
+#
+# ALE-41. Lets a Paperclip agent run (uid 999) bounce its own control plane
+# without a human, so routine platform work stops queueing behind the host owner.
+#
+# Why this is safe to grant, and what it depends on:
+#
+# The restart grant was withdrawn on ALE-25 because the inability to restart was
+# the ONLY thing stopping an agent from applying arbitrary control-plane config —
+# server.bind, allowedHostnames, deploymentMode, exposure. An agent could edit
+# config.json (it is uid 999-writable) but not make it take effect.
+#
+# That is now enforced structurally instead: config.json and paperclip.env carry
+# the ext4 immutable attribute (chattr +i). Note that root-OWNING those files is
+# NOT sufficient and was tested and rejected — Paperclip's writeConfig() uses
+# atomicWriteFile(), which is temp-file + rename(2), and rename needs write
+# permission on the parent DIRECTORY, not the target file. uid 999 owns that
+# directory and cannot stop owning it (the service writes db/, logs/,
+# workspaces/, locks/ and secrets/ there), so an agent could replace a root-owned
+# config by doing exactly what the product itself does. The immutable flag blocks
+# the rename and the unlink; ownership alone blocks neither.
+#
+# THIS GRANT IS ONLY SAFE WHILE THOSE FLAGS ARE SET. Verify with:
+#   lsattr /home/paperclip/.paperclip/instances/default/config.json \
+#          /home/paperclip/paperclip.env      # expect ----i---------e-------
+# If a maintenance step clears them (chattr -i to edit), restore them before
+# leaving, or withdraw this grant.
+#
+# Deliberately NOT granted: start, stop, daemon-reload, edit, or any chattr —
+# any of those would let an agent either strand the service or undo the control
+# this grant depends on. Restart only, and only this unit.
+paperclip ALL=(root) NOPASSWD: /usr/bin/systemctl restart paperclip.service

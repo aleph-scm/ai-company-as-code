@@ -1,0 +1,12 @@
+# Install to /etc/apparmor.d/paperclip-bwrap, then `apparmor_parser -r` it.
+#
+# Source: aleph-scm/prod, apparmor.d/paperclip-bwrap. Copied verbatim — no
+# prod-specific values to strip (the profiled path is generic to any
+# Paperclip install at the standard location).
+abi <abi/4.0>,
+include <tunables/global>
+
+profile paperclip-bwrap /usr/local/lib/paperclip/bwrap flags=(unconfined) {
+  userns,
+  include if exists <local/paperclip-bwrap>
+}

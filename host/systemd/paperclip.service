@@ -1,0 +1,24 @@
+# Install to /etc/systemd/system/paperclip.service
+#
+# Captured verbatim from the live prod host (`systemctl cat paperclip.service`)
+# on 2026-09-25 — this file is not checked into aleph-scm/prod; the live unit
+# was the only copy that existed anywhere before this export. That is exactly
+# the drift this repo exists to close.
+[Unit]
+Description=Paperclip control plane
+After=network.target
+
+[Service]
+Type=simple
+User=paperclip
+Group=paperclip
+WorkingDirectory=/home/paperclip
+EnvironmentFile=/home/paperclip/paperclip.env
+ExecStart=/usr/bin/npx paperclipai run
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
