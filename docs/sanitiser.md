@@ -33,7 +33,7 @@ its own, generated from `scripts/mirror-readme.md`), and the five other
 Paperclip projects (`ai-company-as-code`, `etw`, `life`, `onboarding`,
 `public-code`). `routines.json` in particular is excluded on purpose, not
 by oversight: it describes Aleph's live operating cadence, and its one
-`env` entry (`Prod repo drift check`'s `KUMA_PUSH_URL`) is a secret
+`env` entry (`Prod repo drift check`'s `EXAMPLE_PUSH_URL`) is a secret
 reference that can never be made public-safe — see `docs/fidelity.md`.
 `scripts/rebuild-test.sh` treats a missing `routines.json` as a known valid
 tree shape (a `SKIPPED` row, not a `MISMATCH`) for exactly this reason.
@@ -78,6 +78,7 @@ text file in the build, in one `sed -E` pass (`scripts/sanitise.sh`,
 | `Prod` / `prod` (word-bounded) | `Prod` / `prod` | The real host's name, used both as a hostname and as the private `aleph-scm/prod` repo's name. |
 | `example.com` | `example.com` | The board operator's personal domain (the blog is served from a subdomain of it). |
 | `operator` (word-bounded) | `operator` | The board operator's real first name — the only one used literally in this repo, confined to `host/mcp/paperclip-mcp.md`. |
+| `EXAMPLE_PUSH_URL` (word-bounded) | `EXAMPLE_PUSH_URL` | The real env-var name of the one routine `secret_ref` (board call, ALE-277). The secret's *value* and id never leave the private tree — `routines.json` is not allowlisted — so what this substitutes is the naming convention alone, in the two published files that discuss the redaction (`docs/fidelity.md`, this file). |
 
 This table is deliberately short and literal, not a set of broad heuristics
 — every entry corresponds to a specific real string found by grepping the
@@ -95,6 +96,11 @@ fails the build (exit 2) if any of these survive:
 - `essex`, `luke` (word-bounded, case-insensitive) — the excluded client's
   name and contact, as a defense-in-depth check in case a reference to them
   ever leaks into an allowlisted path outside `projects/etw`.
+- `EXAMPLE_PUSH_URL` (word-bounded, case-sensitive) — should be zero after the
+  substitution table. Worth noting why this one is *also* on the deny-list
+  and not only in the table: this file is `--exclude`d from the scan, so for
+  the `docs/fidelity.md` occurrences the deny-list is the only enforced
+  check that the substitution actually ran.
 - IPv4 literals, email addresses, UUIDs — generic PII/secret-shaped
   patterns, checked regardless of whether a specific known instance exists
   today.

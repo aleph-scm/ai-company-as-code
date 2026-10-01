@@ -320,7 +320,7 @@ above). Its "matches the package" assertion cannot include routines because
 `import` never had them; it instead asserts against `routines.json`.
 
 **Confirmed (CI run 36744238020, 2026-09-30, real response body captured):**
-that routine-creation failure is exactly the `env.KUMA_PUSH_URL` `secret_ref`.
+that routine-creation failure is exactly the `env.EXAMPLE_PUSH_URL` `secret_ref`.
 `routines.json`'s export is deliberately redacted — `export.sh` cannot write
 a real `secretId` into a repo file, since that id belongs to the old company
 and must never round-trip to a new one. Rebuilding the same shape against
@@ -329,7 +329,7 @@ and must never round-trip to a new one. Rebuilding the same shape against
 ```
 {"error":"Validation error","details":[{"code":"invalid_union",
 "errors":[...,"expected string, received undefined" on secretId/value/key],
-"path":["env","KUMA_PUSH_URL"],"message":"Invalid input"}]}
+"path":["env","EXAMPLE_PUSH_URL"],"message":"Invalid input"}]}
 ```
 
 This is a permanent, expected gap, not a bug to chase further: a throwaway

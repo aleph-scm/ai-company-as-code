@@ -37,16 +37,18 @@ action some agent seats can't perform themselves. Generalizable: config
 correctness and runtime behavior are two separate claims, and only checking
 the live behavior closes the loop.
 
-## 4. Filesystem confinement doesn't defend against a system that lets a confined process influence its own next invocation
+## 4. A sandbox covers what its own threat model claims and no more, and the gaps it names stay yours
 
 A sandboxing rollout correctly narrowed what a process can read and write
-*during one run*. It explicitly does not — and by its own design, cannot —
-stop a process from changing a stored configuration that decides how it gets
-invoked *next time*, if that process has write access to that store. Closing
-that gap is a property of the orchestrating system, not the sandbox tool;
-treating a filesystem sandbox as a complete boundary when the real boundary
-also depends on write access to the invocation-deciding store overstates what
-was actually bought. See `confinement.md` for how Aleph scoped this.
+*during one run*, and by its own design stops there. The tool's published
+threat model (`host/agent-bwrap/README.md`, "Threat model") names its
+out-of-scope gaps directly, including one that depends on the orchestrating
+system rather than the sandbox — so closing it is the orchestrator's job, not
+the sandbox's. Generalizable: treating a filesystem sandbox as a complete
+boundary, when its own documentation says the real boundary is wider,
+overstates what was actually bought. Read the tool's threat model as part of
+the deliverable, not as an appendix. See `confinement.md` for how Aleph
+scoped this.
 
 ## 5. A documented boundary and an enforced one are different claims, and confusing them is easy
 

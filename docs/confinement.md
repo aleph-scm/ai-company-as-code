@@ -78,9 +78,11 @@ when framed as "just profile the existing binary." Instead: install a
 second, dedicated, root-owned copy of `bwrap` at a private path, and grant
 *only that copy* an AppArmor profile permitting userns creation. The
 system's own `/usr/bin/bwrap` and every other user on the host remain
-restricted exactly as before. The wrapper binary being root-owned matters
-for a specific reason: if a confined agent could write to the wrapper
-itself, it could edit its way out of confinement on its next run.
+restricted exactly as before. The wrapper binary is root-owned on purpose,
+and the reason is in the tool's own published threat model rather than
+restated here: see the "Threat model" section of
+`host/agent-bwrap/README.md` for what that ownership defends against and
+which adjacent gap the sandbox explicitly does not close.
 
 ## Threat model, in plain terms
 
