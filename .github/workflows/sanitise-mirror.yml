@@ -1,0 +1,57 @@
+# Staged for the board to move to .github/workflows/sanitise-mirror.yml --
+# agent tokens cannot write .github/workflows/ directly (same constraint as
+# ALE-148, ALE-170). See ALE-173's request_confirmation card.
+#
+# REQUIRES a repo secret `MIRROR_GIT_TOKEN`: a token with push access to
+# aleph-scm/ai-company-as-code (a fine-grained PAT scoped to just that repo,
+# contents:write, is enough -- the default GITHUB_TOKEN only has access to
+# THIS repo, not a sibling one). The board has to create the mirror repo
+# and add this secret before the publish step can succeed; until then it
+# fails there, loudly, which is correct -- see scripts/sanitise.sh's
+# contract (exit 2, never a silent skip).
+#
+# Three steps, not one `sanitise.sh` call, on purpose: the mirror is never
+# pushed to unless a company rebuilt from the exact tree about to be pushed
+# also passes scripts/rebuild-test.sh's full assertion suite first (ALE-173
+# acceptance criteria). A clean sanitiser run alone doesn't prove the
+# published tree actually imports and reconstructs correctly -- this does.
+name: Sanitise and publish mirror
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  sanitise-mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+          sudo apt-get update && sudo apt-get install -y jq
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz \
+            | tar -xz -C /usr/local/bin gitleaks
+
+      - name: Build and scan the sanitised tree
+        run: ./scripts/sanitise.sh --out ./.mirror-build
+
+      - name: Rebuild-test the sanitised tree
+        run: REBUILD_TEST_REPO_ROOT="$PWD/.mirror-build" ./scripts/rebuild-test.sh
+
+      - name: Publish to the mirror
+        env:
+          MIRROR_REPO_URL: https://github.com/aleph-scm/ai-company-as-code
+          MIRROR_GIT_TOKEN: ${{ secrets.MIRROR_GIT_TOKEN }}
+        run: ./scripts/sanitise.sh --push ./.mirror-build
