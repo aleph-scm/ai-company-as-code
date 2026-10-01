@@ -145,7 +145,7 @@ name. Belt and braces, same as the private export's own gitleaks pass.
 
 ## Never published unless it also rebuilds
 
-`ci-staged/sanitise-mirror.yml` runs three steps, not one script call:
+`ci-staged/sanitise-mirror.yml` runs four steps, not one script call:
 
 1. `scripts/sanitise.sh --out ./.mirror-build` — build and scan, never push
    (even if the push env vars are set — `--out` mode ignores them).
@@ -157,6 +157,16 @@ name. Belt and braces, same as the private export's own gitleaks pass.
 3. `scripts/sanitise.sh --push ./.mirror-build` — only reached if step 2
    passed. Re-scans the directory (cheap, and the same guarantee as a fresh
    build) before pushing.
+4. After a successful push, a fresh full clone of the mirror itself gets
+   `gitleaks detect` over its **entire commit history** (ALE-340). Every
+   check above scans only the tree the current build produced; but each
+   sync adds a commit on top of the mirror's history, so a secret leaked by
+   a past (then-buggy) sync would still be sitting in that history even
+   after later syncs are clean — only the mirror's own history knows. This
+   step is skipped only when step 3 published nothing new ("no change to
+   push"); any finding fails the job loudly, same "never a silent skip"
+   contract as the script, with `--redact` so the leak's content never
+   reaches the public Actions log.
 
 A clean sanitiser run alone doesn't prove the published tree actually
 imports and reconstructs into a working company — this gate does. The
