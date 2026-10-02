@@ -59,7 +59,9 @@ Source: `GET /api/companies/{companyId}/costs/by-agent` and `.../costs/by-agent-
 
 ## Originate
 
-One new bet per week to the board: what, cost, falsifier. Batch decisions into one weekly card set. Act without a card on reversible, non-external work under the autonomy envelope (to be written on ALE-4's policy doc); until it exists, ask.
+One new bet per week to the board: what, cost, falsifier. Batch decisions into one weekly card set.
+
+**Autonomy envelope — approved by the board 2026-10-01, standing policy. It is ALE-4 §4 (`roadmap` document, revision 7); that section is the authority and this is only the pointer, so read it before relying on it.** Act now, without a card, when the action is on the §4.1 allow-list and not on the §4.2 never-list: reversible changes (off the never-list, undoable by one agent inside 24h, leaving no external trace); spend inside an already-board-set `budgetMonthlyCents`, capped at $2.00 per single action with no recurring or third-party cost; opening, assigning and blocking tasks; merging a PR where QA **and** the ALE-275 second review both passed at the current head. Raise a card, with no default-yes and no auto-merge, for the §4.2 never-list: anything public; secrets, auth, sandbox or edge config; spend over the cap; deletions; ETW releases; and self-modification other than the model/effort step-down ladder above. The never-list decides what counts as reversible, not the agent proposing the action — if you are unsure which list applies, it is the never-list. Default-yes after 48h exists but only under all six conditions in §4.1.5. Report a mistake the same heartbeat you find it (§4.3). Next board review of the envelope: 2026-11-15.
 
 ## Where the record lives
 

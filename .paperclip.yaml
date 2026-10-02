@@ -192,6 +192,22 @@ agents:
       canCreateSkills: true
     permissionGrants:
     - permissionKey: tasks:assign
+  reviewer:
+    role: general
+    icon: eye
+    capabilities: 'Second code review on every PR across aleph-scm repos and piranesi0/etw:
+      correctness, security, tests, and scope-vs-ticket, independent of QA''s acceptance-criteria
+      check. Routes never-list-touching PRs to a CTO review.'
+    adapter:
+      config:
+        model: example-provider/example-model
+        timeoutSec: 1800
+      type: opencode_local
+    permissions:
+      canCreateAgents: true
+      canCreateSkills: true
+    permissionGrants:
+    - permissionKey: tasks:assign
   scout:
     role: general
     icon: radar
@@ -226,6 +242,7 @@ projects:
   aleph:
     icon: gem
     color: '#8b5cf6'
+    leadAgentSlug: cto
     status: in_progress
     workspaces:
       aleph-apps:
@@ -239,29 +256,44 @@ projects:
   blog:
     icon: globe
     color: '#f59e0b'
-    leadAgentSlug: cto
+    leadAgentSlug: writer
     status: in_progress
     workspaces:
-      aleph-scm-aleph-brain:
-        name: aleph-scm/aleph-brain
+      blog-aleph-brain:
+        name: Blog/aleph-brain
         metadata:
           githubRepositoryId: '1379408425'
         repoUrl: https://github.com/aleph-scm/aleph-brain
         sourceType: git_repo
         visibility: default
-      aleph-scm-awt-site:
-        name: aleph-scm/awt-site
+      blog-blog:
+        name: Blog/blog
+        defaultRef: main
+        isPrimary: true
+        repoRef: writer/ale-338-style-guide-audit-fixes
+        repoUrl: https://github.com/aleph-scm/blog
+        sourceType: git_repo
+        visibility: default
+      public-presence-agent-bwrap:
+        name: Public presence/agent-bwrap
+        repoUrl: https://github.com/aleph-scm/agent-bwrap
+        sourceType: git_repo
+        visibility: default
+      public-presence-awt-site:
+        name: Public presence/awt-site
         metadata:
           githubRepositoryId: '1390376110'
         repoUrl: https://github.com/aleph-scm/awt-site
         sourceType: git_repo
         visibility: default
-      blog:
-        name: blog
-        defaultRef: main
-        isPrimary: true
-        repoRef: ale-152-sandbox-take-it-off-post
-        repoUrl: https://github.com/aleph-scm/blog
+      public-presence-financial-dashboard:
+        name: Public presence/financial-dashboard
+        repoUrl: https://github.com/aleph-scm/financial-dashboard
+        sourceType: git_repo
+        visibility: default
+      public-presence-paperclip-plugin-agent-usage:
+        name: Public presence/paperclip-plugin-agent-usage
+        repoUrl: https://github.com/piranesi0/paperclip-plugin-agent-usage
         sourceType: git_repo
         visibility: default
 schemaVersion: 7
@@ -277,6 +309,7 @@ sidebar:
   - coder
   - designer
   - qa
+  - reviewer
   - dreamer
   - reader
   - researcher
