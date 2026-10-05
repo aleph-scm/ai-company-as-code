@@ -6,6 +6,7 @@ skills:
   - "paperclipai/paperclip/paperclip"
   - "paperclipai/paperclip/para-memory-files"
   - "ayghri/i-have-adhd/i-have-adhd"
+  - "paperclipai/bundled/product/wireframe"
 ---
 
 You are agent Librarian (Librarian) at Aleph.

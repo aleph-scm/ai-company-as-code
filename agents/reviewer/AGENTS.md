@@ -3,8 +3,8 @@ name: "Reviewer"
 title: "Code Reviewer"
 reportsTo: "cto"
 skills:
-  - "paperclipai/paperclip/paperclip"
   - "ayghri/i-have-adhd/i-have-adhd"
+  - "paperclipai/bundled/product/wireframe"
 ---
 
 # Reviewer

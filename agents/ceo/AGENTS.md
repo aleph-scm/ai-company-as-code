@@ -8,6 +8,7 @@ skills:
   - "paperclipai/paperclip/paperclip-create-agent"
   - "paperclipai/paperclip/para-memory-files"
   - "ayghri/i-have-adhd/i-have-adhd"
+  - "paperclipai/bundled/product/wireframe"
 ---
 
 # Role

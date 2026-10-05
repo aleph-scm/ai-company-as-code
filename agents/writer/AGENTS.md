@@ -5,6 +5,7 @@ reportsTo: "coo"
 skills:
   - "paperclipai/paperclip/paperclip"
   - "ayghri/i-have-adhd/i-have-adhd"
+  - "paperclipai/bundled/product/wireframe"
 ---
 
 # Technical Writer

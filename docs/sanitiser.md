@@ -77,7 +77,7 @@ text file in the build, in one `sed -E` pass (`scripts/sanitise.sh`,
 | `/var/repos` | `/var/repos` | The real host's repo-checkout convention. |
 | `Prod` / `prod` (word-bounded) | `Prod` / `prod` | The real host's name, used both as a hostname and as the private `aleph-scm/prod` repo's name. |
 | `example.com` | `example.com` | The board operator's personal domain (the blog is served from a subdomain of it). |
-| `operator` (word-bounded) | `operator` | The board operator's real first name — the only one used literally in this repo, confined to `host/mcp/paperclip-mcp.md`. |
+| `operator` (word-bounded, case-insensitive) | `operator` | The board operator's real first name — the only one used literally in this repo, confined to `host/mcp/paperclip-mcp.md`. Case-insensitive since 2026-10-05: a lowercase-only substitution let capitalized "operator" (a persona name in vendored skill example docs, not the real operator) through to the deny-list and failed the build. |
 | `EXAMPLE_PUSH_URL` (word-bounded) | `EXAMPLE_PUSH_URL` | The real env-var name of the one routine `secret_ref` (board call, ALE-277). The secret's *value* and id never leave the private tree — `routines.json` is not allowlisted — so what this substitutes is the naming convention alone, in the two published files that discuss the redaction (`docs/fidelity.md`, this file). |
 
 This table is deliberately short and literal, not a set of broad heuristics
@@ -103,7 +103,10 @@ fails the build (exit 2) if any of these survive:
   check that the substitution actually ran.
 - IPv4 literals, email addresses, UUIDs — generic PII/secret-shaped
   patterns, checked regardless of whether a specific known instance exists
-  today.
+  today. Email addresses at `example.com`/`.org`/`.net` (RFC 2606) or
+  `acme.com`/`.org` (the generic "Acme Corp" placeholder convention) are
+  excluded — see "Why the email check has a placeholder-domain exception"
+  below.
 - `/home/<name>` for any name other than `paperclip`, `agent-runner`, or
   `operator` — see "Why `/home/` isn't a blanket denylist" below.
 
@@ -122,6 +125,18 @@ forever. The deny-list scan allows exactly these two, plus
 `/home/operator`), and fails on anything else under `/home/` — which is the
 actual goal: block a username the substitution table doesn't know about
 yet, not block a path shape that happens to start with `/home/`.
+
+### Why the email check has a placeholder-domain exception
+
+Found 2026-10-05: vendoring the `paperclipai` wireframe skill brought in
+example UI mockups containing `you@example.com` and `operator@acme.com` as
+placeholder form-field text. Both failed the build — correctly flagging
+real-looking email syntax, but on a domain that is itself the already-safe
+output of substitution elsewhere in this script (`example.com` → `example.com`,
+line 131), not a miss. The exception excludes exactly `example.com`/`.org`/
+`.net` and `acme.com`/`.org`, the same narrow, named-exception shape as the
+`/home/` allowance below — not a blanket exemption for all emails, which
+would defeat the check.
 
 ## `host/` is the one deliberate exception to "real content only"
 

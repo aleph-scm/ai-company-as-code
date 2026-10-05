@@ -5,6 +5,7 @@ reportsTo: "navigator"
 skills:
   - "paperclipai/paperclip/paperclip"
   - "ayghri/i-have-adhd/i-have-adhd"
+  - "paperclipai/bundled/product/wireframe"
 ---
 
 You are agent Researcher (Researcher) at Aleph.

@@ -5,6 +5,7 @@ reportsTo: "cto"
 skills:
   - "paperclipai/paperclip/paperclip"
   - "ayghri/i-have-adhd/i-have-adhd"
+  - "paperclipai/bundled/product/wireframe"
 ---
 
 # Visual & Frontend Designer

@@ -9,18 +9,22 @@ agents:
     adapter:
       config:
         model: example-provider/example-model
-        timeoutSec: 1800
+        timeoutSec: 600
       type: opencode_local
     permissions:
       canCreateAgents: true
       canCreateSkills: true
     permissionGrants:
     - permissionKey: tasks:assign
+    appearance:
+      characterVersion: cap-v1
+      paletteId: pink-lemonade
+      schemaVersion: 1
   ceo:
     role: ceo
     adapter:
       config:
-        effort: high
+        effort: medium
       type: claude_local
     runtime:
       heartbeat:
@@ -33,6 +37,10 @@ agents:
     - permissionKey: agents:configure
     - permissionKey: skills:create
     - permissionKey: tasks:assign
+    appearance:
+      characterVersion: cap-v1
+      paletteId: lime-lagoon
+      schemaVersion: 1
   coder:
     role: engineer
     icon: code
@@ -41,13 +49,17 @@ agents:
     adapter:
       config:
         model: example-provider/example-model
-        timeoutSec: 2700
+        timeoutSec: 2100
       type: opencode_local
     permissions:
       canCreateAgents: true
       canCreateSkills: true
     permissionGrants:
     - permissionKey: tasks:assign
+    appearance:
+      characterVersion: cap-v1
+      paletteId: cherry-pop
+      schemaVersion: 1
   coo:
     role: general
     icon: cog
@@ -64,6 +76,10 @@ agents:
       canCreateSkills: true
     permissionGrants:
     - permissionKey: tasks:assign
+    appearance:
+      characterVersion: cap-v1
+      paletteId: pink-lemonade
+      schemaVersion: 1
   cto:
     role: cto
     icon: crown
@@ -85,6 +101,10 @@ agents:
       canCreateSkills: true
     permissionGrants:
     - permissionKey: tasks:assign
+    appearance:
+      characterVersion: cap-v1
+      paletteId: electric-grove
+      schemaVersion: 1
   designer:
     role: designer
     icon: gem
@@ -101,6 +121,10 @@ agents:
       canCreateSkills: true
     permissionGrants:
     - permissionKey: tasks:assign
+    appearance:
+      characterVersion: cap-v1
+      paletteId: flamingo-jade
+      schemaVersion: 1
   dreamer:
     role: general
     icon: sparkles
@@ -113,6 +137,10 @@ agents:
       type: opencode_local
     permissionGrants:
     - permissionKey: tasks:assign
+    appearance:
+      characterVersion: cap-v1
+      paletteId: bubblegum-sky
+      schemaVersion: 1
   librarian:
     role: general
     icon: database
@@ -134,6 +162,10 @@ agents:
       canCreateSkills: true
     permissionGrants:
     - permissionKey: tasks:assign
+    appearance:
+      characterVersion: cap-v1
+      paletteId: orchid-peach
+      schemaVersion: 1
   navigator:
     role: general
     icon: target
@@ -148,6 +180,10 @@ agents:
       type: claude_local
     permissionGrants:
     - permissionKey: tasks:assign
+    appearance:
+      characterVersion: cap-v1
+      paletteId: golden-hour
+      schemaVersion: 1
   qa:
     role: qa
     icon: bug
@@ -158,13 +194,17 @@ agents:
     adapter:
       config:
         model: example-provider/example-model
-        timeoutSec: 1800
+        timeoutSec: 600
       type: opencode_local
     permissions:
       canCreateAgents: true
       canCreateSkills: true
     permissionGrants:
     - permissionKey: tasks:assign
+    appearance:
+      characterVersion: cap-v1
+      paletteId: arctic-blue
+      schemaVersion: 1
   reader:
     role: general
     icon: eye
@@ -177,6 +217,10 @@ agents:
       type: opencode_local
     permissionGrants:
     - permissionKey: tasks:assign
+    appearance:
+      characterVersion: cap-v1
+      paletteId: ultraviolet-tide
+      schemaVersion: 1
   researcher:
     role: researcher
     icon: telescope
@@ -192,6 +236,10 @@ agents:
       canCreateSkills: true
     permissionGrants:
     - permissionKey: tasks:assign
+    appearance:
+      characterVersion: cap-v1
+      paletteId: coral-current
+      schemaVersion: 1
   reviewer:
     role: general
     icon: eye
@@ -208,6 +256,10 @@ agents:
       canCreateSkills: true
     permissionGrants:
     - permissionKey: tasks:assign
+    appearance:
+      characterVersion: cap-v1
+      paletteId: coral-current
+      schemaVersion: 1
   scout:
     role: general
     icon: radar
@@ -220,6 +272,10 @@ agents:
       type: opencode_local
     permissionGrants:
     - permissionKey: tasks:assign
+    appearance:
+      characterVersion: cap-v1
+      paletteId: flamingo-jade
+      schemaVersion: 1
   writer:
     role: general
     icon: message-square
@@ -236,6 +292,10 @@ agents:
       canCreateSkills: true
     permissionGrants:
     - permissionKey: tasks:assign
+    appearance:
+      characterVersion: cap-v1
+      paletteId: pink-lemonade
+      schemaVersion: 1
 company:
   logoPath: images/company-logo.png
 projects:
@@ -270,7 +330,7 @@ projects:
         name: Blog/blog
         defaultRef: main
         isPrimary: true
-        repoRef: writer/ale-338-style-guide-audit-fixes
+        repoRef: main
         repoUrl: https://github.com/aleph-scm/blog
         sourceType: git_repo
         visibility: default

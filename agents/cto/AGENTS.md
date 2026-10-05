@@ -5,6 +5,7 @@ reportsTo: "ceo"
 skills:
   - "paperclipai/paperclip/paperclip"
   - "ayghri/i-have-adhd/i-have-adhd"
+  - "paperclipai/bundled/product/wireframe"
 ---
 
 You are agent CTO (Chief Technology Officer) at Aleph.

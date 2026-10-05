@@ -6,7 +6,7 @@ metadata:
   sources:
     -
       kind: "github-dir"
-      commit: "427e0484059c33fdfd98263e2d6f4c3a27a7e156"
+      commit: "2a8a99e4a5f69aa803b3f10b982f583e75a87042"
       path: "skills/agentmail"
       repo: "paperclipai/paperclip"
       trackingRef: "master"

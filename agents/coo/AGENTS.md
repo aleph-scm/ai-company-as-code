@@ -6,6 +6,7 @@ skills:
   - "paperclipai/paperclip/paperclip"
   - "paperclipai/paperclip/paperclip-converting-plans-to-tasks"
   - "ayghri/i-have-adhd/i-have-adhd"
+  - "paperclipai/bundled/product/wireframe"
 ---
 
 You are agent COO (Chief Operating Officer) at Aleph.
