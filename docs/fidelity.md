@@ -288,6 +288,59 @@ agent brings with it (e.g. Summarizer's `summarize-status`) -- are a known,
 platform-driven gap and not asserted against, the same treatment as built-in
 agents get in the agent-count check.
 
+## GitHub rate limit can leave a skill unpinned (ALE-565, 2026-10-05)
+
+`scripts/pin_skill_sources.py` resolves each unpinned skill's `trackingRef`
+to a commit SHA via the unauthenticated GitHub commits API --
+`https://api.github.com/repos/{repo}/commits/{ref}` with only a
+`User-Agent` header, no token. Anonymous GitHub API calls are capped at 60
+req/hr **per IP**, not per run -- every concurrent export or other GitHub
+call from this host shares the same budget. Hitting that cap used to raise
+straight out of the script, and because the pin stage runs *before*
+`export.sh` syncs/commits/pushes anything, that one 403 took the entire
+nightly export down with it: no commit, no push, a full night's backup
+lost to a transient, shared third-party limit. Found live, 2026-10-05, the
+2026-10-05 nightly export, worsened by a concurrent run (`ALE-554`) sharing
+the IP.
+
+**Fixed, deliberately not by authenticating the lookup.** Sending
+`Authorization: Bearer $PAPERCLIP_GIT_TOKEN` would raise the limit to
+5000/hr, but it's a new use of a credential on an auth-adjacent surface --
+`ALE-4` §4.2 never-list territory, needing a board card. Chose the
+pure-logic fix instead, entirely inside `pin_skill_sources.py` /
+`scripts/export.sh`, neither of which is release machinery (see
+`docs/release-process.md`'s path list) so it isn't gated by that doc's
+direct-push contract either:
+
+- A 403/429 from the commit-lookup now gets a bounded retry (4 attempts,
+  backoff capped at 30s, honouring `Retry-After` / `X-RateLimit-Reset` when
+  GitHub sends them).
+- If still rate-limited after that, `pin_skill_sources.py` leaves that
+  skill's `commit: null` line untouched, prints a loud `WARN ... UNPINNED`
+  line (path, repo, ref) to stderr, and **exits 0** -- it does not abort.
+  `export.sh` echoes that warning into its own output and proceeds to
+  sync/commit/push everything else normally.
+- Any other HTTP error (404 bad repo, 500, ...) still raises immediately
+  and fails the stage outright, same as before this fix -- those are real
+  bugs, not a shared quota, and retrying them would only delay the same
+  failure.
+
+**Residual, known gap, not a bug to chase further:** a skill left unpinned
+this way still has `commit: null` in the committed SKILL.md. Whether
+`company import` rejects just that skill or the whole package on a
+`commit: null` it finds is not verified either way here — only that import
+rejects it (see the module docstring, found live 2026-09-30, `ALE-170`).
+Either way, the commit still lands and this repo stays the backup of
+record; the gap is scoped to *restoring from that specific commit*, not to
+whether tonight's backup happened at all. The per-run `_cache`/`_failed`
+means a retry within the same run doesn't re-hammer the same exhausted key,
+and the *next* nightly export starts fresh and will very likely resolve it
+once the shared hourly quota has reset — so this is expected to self-heal
+within a day, not accumulate. If Phase 2's rebuild test ever runs against a
+commit that has a known-unpinned skill, treat an import failure on that
+skill as this gap, not a regression, and re-run against a later commit to
+confirm.
+
 ## Import command for Phase 2
 
 ```
