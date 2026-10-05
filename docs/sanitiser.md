@@ -6,6 +6,10 @@ How `scripts/sanitise.sh` turns this private repo into the public mirror,
 to the script itself; if the two disagree, the script is what actually ran
 and this file is stale and needs fixing.
 
+Changes to `scripts/sanitise.sh` itself (and the other release-machinery
+paths) land under the direct-push + CTO-review contract — see
+[`docs/release-process.md`](release-process.md).
+
 ## Why allowlist, not denylist, for *what* gets copied
 
 A denylist on paths ("copy everything except X") fails open: a new private
