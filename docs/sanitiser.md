@@ -138,6 +138,15 @@ line 131), not a miss. The exception excludes exactly `example.com`/`.org`/
 `/home/` allowance below — not a blanket exemption for all emails, which
 would defeat the check.
 
+Found 2026-10-05 (same day, during review of the fix above): the exception
+regex must anchor the placeholder TLD to the end of the matched address
+with `$`, not `\b`. Each candidate is already a lone `file:lineno:email`
+record, so `$` lands on the true end of the address; `\b` instead accepts
+any non-word byte right after the TLD, which is satisfied by a literal
+`.` — so `x@example.com.evil.net` would wrongly match the exception and
+slip past the deny-list. No instance of this shape was found in the repo
+when the gap was caught; fixed before it could leak anything.
+
 ## `host/` is the one deliberate exception to "real content only"
 
 Everywhere else in the mirror, content is either real (agent instructions,
