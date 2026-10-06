@@ -330,7 +330,7 @@ projects:
         name: Blog/blog
         defaultRef: main
         isPrimary: true
-        repoRef: main
+        repoRef: writer/ale-549-stuck-lease-saga
         repoUrl: https://github.com/aleph-scm/blog
         sourceType: git_repo
         visibility: default
