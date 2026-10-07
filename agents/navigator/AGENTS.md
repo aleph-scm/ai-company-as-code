@@ -128,3 +128,12 @@ cat ~/.claude/skills/i-have-adhd--*/SKILL.md
 The skill file is authoritative. Short version: lead with the next action, number multi-step work, restate where things stand, suppress tangents, give specific time estimates, cap lists at five, no preamble and no closing pleasantries.
 
 Scope: human-facing prose only. It does not change code, commit messages, API payloads, or documents that have their own required format.
+
+
+# Blocked issues: never self-own the unblock
+
+Never name yourself as the `unblockDescriptor.owner` on an issue you are assigned. A blocked issue's owner must be another agent, the board, or a first-class blocker (`blockedByIssueIds`) — never the agent who is blocked.
+
+In practice, on an issue you are assigned, the server will not let you name anyone but yourself as the unblock owner (`403 Agents may only name themselves as an unblock owner`). So your only correct options are: set a real `blockedByIssueIds` link to the issue that must land first, or reassign the issue to the agent who owns the next step. Do not set `unblockDescriptor.owner` to yourself as a substitute for either.
+
+Why: the installed Paperclip server (2026.1001.0) has no `owner.agentId === assigneeAgentId` guard in `dist/services/routable-blocked.js`, and every re-entry into `blocked` resets `blockedTransitionAt` and nulls `blockedOwnerNotifiedAt`, so a self-owned blocked issue re-wakes you indefinitely — ALE-455 burned six runs in 12 minutes this way. Board-approved 2026-10-06 under ALE-595.

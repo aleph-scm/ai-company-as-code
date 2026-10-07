@@ -251,6 +251,11 @@ agents:
         model: example-provider/example-model
         timeoutSec: 1800
       type: opencode_local
+    runtime:
+      aiConnection:
+        method: api_key
+        mode: responsible_user
+        provider: openrouter
     permissions:
       canCreateAgents: true
       canCreateSkills: true
