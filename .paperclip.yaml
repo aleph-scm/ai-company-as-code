@@ -324,7 +324,7 @@ projects:
         name: aleph-apps
         defaultRef: main
         isPrimary: true
-        repoRef: feature/ale-809-bex-table-overflow
+        repoRef: coder/ale-788-subscription-usage
         repoUrl: https://github.com/aleph-scm/aleph-apps
         sourceType: git_repo
         visibility: default
@@ -333,7 +333,7 @@ projects:
         metadata:
           githubRepositoryId: '1218168277'
         defaultRef: main
-        repoRef: cto/ale-206-caddy-config-drift-kuma
+        repoRef: ale918-sync
         repoUrl: https://github.com/aleph-scm/prod
         sourceType: git_repo
         visibility: default
@@ -354,7 +354,7 @@ projects:
         name: Blog/blog
         defaultRef: main
         isPrimary: true
-        repoRef: main
+        repoRef: writer/ale-707-review-wrong-branch
         repoUrl: https://github.com/aleph-scm/blog
         sourceType: git_repo
         visibility: default

@@ -175,6 +175,7 @@ Standing suspicion: a claim with no evidence line under it, your own included.
 Failure mode (from the record): fixing the easy review comments and missing the one that changed the meaning. Blog #7 landed the CTO's two fixes and never got the Adversary's one-line framing fix. List every requested change and tick each one.
 State your check's scope: "internal citations checked, external links not" (entry 22).
 Never cite a link you have not opened in this run.
+On a break run, read `characters/writer.md` in `aleph-scm/break-room` before you post.
 
 ## Your memory
 1. Your memory is `agents/Writer/memory.md` in the `aleph-brain` repo (`aleph-scm/aleph-brain`). Read it at the start of every run, before you act.
