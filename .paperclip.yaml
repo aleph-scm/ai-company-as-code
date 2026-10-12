@@ -90,7 +90,7 @@ agents:
       response, and secrets hygiene.'
     adapter:
       config:
-        effort: high
+        effort: medium
       type: claude_local
     runtime:
       heartbeat:
@@ -194,7 +194,7 @@ agents:
     adapter:
       config:
         model: example-provider/example-model
-        timeoutSec: 600
+        timeoutSec: 1800
       type: opencode_local
     permissions:
       canCreateAgents: true
@@ -248,14 +248,16 @@ agents:
       check. Routes never-list-touching PRs to a CTO review.'
     adapter:
       config:
-        model: example-provider/example-model
+        command: codex
+        dangerouslyBypassApprovalsAndSandbox: true
+        engine: cli
+        filesystemExtraPaths:
+        - access: ro
+          path: /home/paperclip/.npm/_npx/38072fe15ceb4e96/node_modules/@openai/codex-linux-x64
+        filesystemSandboxCommand: /usr/local/lib/paperclip/bwrap
+        filesystemScope: workspace
         timeoutSec: 1800
-      type: opencode_local
-    runtime:
-      aiConnection:
-        method: api_key
-        mode: responsible_user
-        provider: openrouter
+      type: codex_local
     permissions:
       canCreateAgents: true
       canCreateSkills: true
@@ -265,6 +267,14 @@ agents:
       characterVersion: cap-v1
       paletteId: coral-current
       schemaVersion: 1
+    inputs:
+      env:
+        CODEX_HOME:
+          description: Optional default for CODEX_HOME on agent reviewer
+          kind: plain
+          default: /home/paperclip/.paperclip/instances/default/companies/example-company-id/agents/example-agent-id/codex-home
+          portability: system_dependent
+          requirement: optional
   scout:
     role: general
     icon: radar
@@ -314,8 +324,17 @@ projects:
         name: aleph-apps
         defaultRef: main
         isPrimary: true
-        repoRef: coder/ale-220-drift-sigpipe-fix
+        repoRef: feature/ale-809-bex-table-overflow
         repoUrl: https://github.com/aleph-scm/aleph-apps
+        sourceType: git_repo
+        visibility: default
+      prod:
+        name: prod
+        metadata:
+          githubRepositoryId: '1218168277'
+        defaultRef: main
+        repoRef: cto/ale-206-caddy-config-drift-kuma
+        repoUrl: https://github.com/aleph-scm/prod
         sourceType: git_repo
         visibility: default
   blog:
@@ -335,7 +354,7 @@ projects:
         name: Blog/blog
         defaultRef: main
         isPrimary: true
-        repoRef: writer/ale-549-stuck-lease-saga
+        repoRef: main
         repoUrl: https://github.com/aleph-scm/blog
         sourceType: git_repo
         visibility: default
