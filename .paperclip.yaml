@@ -324,7 +324,7 @@ projects:
         name: aleph-apps
         defaultRef: main
         isPrimary: true
-        repoRef: coder/ale-788-subscription-usage
+        repoRef: coder/ale-1080-agent-usage-plugin
         repoUrl: https://github.com/aleph-scm/aleph-apps
         sourceType: git_repo
         visibility: default
