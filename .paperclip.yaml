@@ -48,9 +48,9 @@ agents:
       - with focused verification.
     adapter:
       config:
-        model: example-provider/example-model
+        dangerouslyBypassApprovalsAndSandbox: true
         timeoutSec: 2100
-      type: opencode_local
+      type: codex_local
     permissions:
       canCreateAgents: true
       canCreateSkills: true
@@ -354,7 +354,7 @@ projects:
         name: Blog/blog
         defaultRef: main
         isPrimary: true
-        repoRef: writer/ale-707-review-wrong-branch
+        repoRef: writer/ale-422-go-tier-dark
         repoUrl: https://github.com/aleph-scm/blog
         sourceType: git_repo
         visibility: default
