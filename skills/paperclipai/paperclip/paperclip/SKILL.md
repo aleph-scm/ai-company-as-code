@@ -1,12 +1,12 @@
 ---
 name: "paperclip"
-description: "Interact with the Paperclip control plane API for task coordination and governance. Use when checking assignments, updating issue status, posting comments, delegating work, managing routines, or calling Paperclip API endpoints."
+description: "Use for Paperclip-managed tasks and heartbeats: reading task context, delivering task documents or files, updating completion or blockers, coordinating or delegating work, and following company governance. Includes control plane API operations for assignments, comments, approvals, and routines."
 slug: "paperclip"
 metadata:
   sources:
     -
       kind: "github-dir"
-      commit: "9cc979116e4d4f49d3a2504b32d14189fad41728"
+      commit: "5e8956c207b098179a9d9cdc9e97d6cb6cd5805c"
       path: "skills/paperclip"
       repo: "paperclipai/paperclip"
       trackingRef: "master"

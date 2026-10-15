@@ -1,12 +1,12 @@
 ---
 name: "paperclip-converting-plans-to-tasks"
-description: "Convert Paperclip plans into executable issue graphs. Use when asked to plan, scope, or break down Paperclip company work into assigned tasks with specialty fit, dependencies, blockers, and parallelization."
+description: "Decide whether Paperclip work needs delegation, and connect justified tasks with owners and real dependencies. Use when turning an authorized plan into work."
 slug: "paperclip-converting-plans-to-tasks"
 metadata:
   sources:
     -
       kind: "github-dir"
-      commit: "9cc979116e4d4f49d3a2504b32d14189fad41728"
+      commit: "5e8956c207b098179a9d9cdc9e97d6cb6cd5805c"
       path: "skills/paperclip-converting-plans-to-tasks"
       repo: "paperclipai/paperclip"
       trackingRef: "master"

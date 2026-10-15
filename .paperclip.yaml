@@ -354,7 +354,7 @@ projects:
         name: Blog/blog
         defaultRef: main
         isPrimary: true
-        repoRef: writer/ale-422-go-tier-dark
+        repoRef: writer/ale-1256-archify-caption
         repoUrl: https://github.com/aleph-scm/blog
         sourceType: git_repo
         visibility: default
