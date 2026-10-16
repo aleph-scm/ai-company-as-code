@@ -402,3 +402,39 @@ script; `assert_all` logged MISMATCHes but never turned them into a
 non-zero exit). Fixed same day: the routine loop now uses process
 substitution instead of a pipe, and `assert_all` fails the run on any
 MISMATCH not already documented here.
+
+## Export success includes downstream CI (ALE-1257)
+
+A successful `git push` proves that the backup arrived, not that it rebuilds or
+that the sanitised mirror published. Previously `scripts/export.sh` reported
+success immediately after pushing; downstream failures could remain unnoticed
+for days.
+
+After a changed export, the script captures the full commit SHA, pushes that
+exact SHA to `main`, and runs `python3 scripts/check_export_ci.py <sha>` before
+printing success. The check requires the latest **push** run on `main` for each
+of `Rebuild test` (`rebuild-test.yml`) and `Sanitise and publish mirror`
+(`sanitise-mirror.yml`) to complete with `conclusion=success` at that exact SHA.
+An older green commit, scheduled run, or manual run cannot satisfy this gate.
+
+The checker requires `gh` with existing read access to the private repository's
+Actions runs. It polls every 15 seconds with a 20-minute total deadline and a
+30-second limit per `gh` call. A failed, cancelled, skipped, or otherwise
+non-successful completed run fails immediately. Missing and unfinished runs
+fail at the deadline. API/auth errors and malformed responses fail closed.
+Failures exit 2 and name the workflow, SHA, and run URL (or workflow page when
+no run exists). The caller must preserve that non-zero exit and report the
+failure on the originating Company export issue for CTO review.
+
+The pushed backup remains available on failure; the checker does not rerun CI,
+revert, or republish. After remediation, verify the same SHA with the standalone
+command above (`--timeout <seconds>` overrides its deadline). A no-diff export
+still makes no push and does not run this check, so it does not resolve a prior
+CI failure. The routine's execution budget must allow the 20-minute wait in
+addition to export time; budget/configuration changes require separate approval.
+
+Offline regression check (no export, network access, or publication):
+`python3 -m unittest discover -s scripts/tests -p 'test_check_export_ci.py' -v`.
+It invokes the real checker against a mocked `gh`, including deliberately red
+results for each workflow, latest-run cancellation, wrong-SHA green, missing
+runs, timeout, API failure, and malformed responses.
