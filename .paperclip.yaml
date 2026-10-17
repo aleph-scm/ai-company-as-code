@@ -25,6 +25,7 @@ agents:
     adapter:
       config:
         effort: medium
+        engine: cli
       type: claude_local
     runtime:
       heartbeat:
@@ -48,7 +49,14 @@ agents:
       - with focused verification.
     adapter:
       config:
+        command: codex
         dangerouslyBypassApprovalsAndSandbox: true
+        engine: cli
+        filesystemExtraPaths:
+        - access: ro
+          path: /home/paperclip/.npm/_npx/867707d436975b17/node_modules/@openai/codex-linux-x64
+        filesystemSandboxCommand: /usr/local/lib/paperclip/bwrap
+        filesystemScope: workspace
         timeoutSec: 2100
       type: codex_local
     permissions:
@@ -70,6 +78,7 @@ agents:
     adapter:
       config:
         effort: medium
+        engine: cli
       type: claude_local
     permissions:
       canCreateAgents: true
@@ -91,6 +100,7 @@ agents:
     adapter:
       config:
         effort: medium
+        engine: cli
       type: claude_local
     runtime:
       heartbeat:
@@ -177,6 +187,7 @@ agents:
     adapter:
       config:
         effort: medium
+        engine: cli
       type: claude_local
     permissionGrants:
     - permissionKey: tasks:assign
@@ -253,7 +264,9 @@ agents:
         engine: cli
         filesystemExtraPaths:
         - access: ro
-          path: /home/paperclip/.npm/_npx/38072fe15ceb4e96/node_modules/@openai/codex-linux-x64
+          path: /home/paperclip/.npm/_npx/867707d436975b17/node_modules/@openai/codex-linux-x64
+        - access: ro
+          path: /home/paperclip/.codex/auth.json
         filesystemSandboxCommand: /usr/local/lib/paperclip/bwrap
         filesystemScope: workspace
         timeoutSec: 1800
@@ -291,6 +304,45 @@ agents:
       characterVersion: cap-v1
       paletteId: flamingo-jade
       schemaVersion: 1
+  standby:
+    role: engineer
+    icon: code
+    capabilities: Standby engineering seat on the Claude subscription. Takes over
+      an in-flight engineering ticket when the Codex seat is out of allowance (5-hour
+      window at 90%+, or a provider quota kill) and hands it back when the window
+      resets. Does not pick up work on its own.
+    adapter:
+      config:
+        effort: medium
+        engine: cli
+        timeoutSec: 2700
+      type: claude_local
+    permissions:
+      canCreateAgents: true
+      canCreateSkills: true
+    permissionGrants:
+    - permissionKey: agents:configure
+    - permissionKey: agents:suggest-changes
+    - permissionKey: audit:view_agent_actions
+    - permissionKey: inbox:manage
+      scope:
+        responsibleUserOnly: true
+    - permissionKey: skills:create
+    - permissionKey: skills:suggest-changes
+    - permissionKey: tasks:assign
+    - permissionKey: tasks:assign_scope
+      scope:
+        subtreeRootAgentId: standby
+    - permissionKey: tasks:manage_active_checkouts
+    - permissionKey: tools:manage_connections
+    - permissionKey: tools:manage_profiles
+    - permissionKey: tools:manage_runtime
+    - permissionKey: tools:use
+    - permissionKey: tools:view_audit
+    appearance:
+      characterVersion: cap-v1
+      paletteId: turquoise-cherry
+      schemaVersion: 1
   writer:
     role: general
     icon: message-square
@@ -301,6 +353,7 @@ agents:
     adapter:
       config:
         effort: medium
+        engine: cli
       type: claude_local
     permissions:
       canCreateAgents: true
@@ -394,6 +447,7 @@ sidebar:
   - designer
   - qa
   - reviewer
+  - standby
   - dreamer
   - reader
   - researcher

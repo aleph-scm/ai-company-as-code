@@ -78,6 +78,7 @@ text file in the build, in one `sed -E` pass (`scripts/sanitise.sh`,
 
 | Real | Placeholder | Why |
 |---|---|---|
+| `subtreeRootAgentId: c0940f26-baa9-4f24-9000-00739bc7a489` | `subtreeRootAgentId: standby` | Maps the `permissionGrants[].scope` agent reference to its portable slug after YAML filtering. The fixed substitution recognises only this reviewed UUID in this field; unknown UUIDs and occurrences in other fields still fail the unchanged deny-list. |
 | `/var/repos` | `/var/repos` | The real host's repo-checkout convention. |
 | `Prod` / `prod` (word-bounded) | `Prod` / `prod` | The real host's name, used both as a hostname and as the private `aleph-scm/prod` repo's name. |
 | `example.com` | `example.com` | The board operator's personal domain (the blog is served from a subdomain of it). |
@@ -210,3 +211,7 @@ sanitiser was proven clean for ALE-173 before the board had created the
 mirror repo for it to push to, and it's also how `REBUILD_TEST_REPO_ROOT`
 was pointed at a real sanitised tree to prove `scripts/rebuild-test.sh`
 passes against the mirror's (smaller) shape.
+
+Regression check: `python3 -m unittest discover -s scripts/tests -p test_sanitise.py`.
+The fixture runs the real shell pipeline with a secret-scanner test double; it
+proves the scope mapping and deny-list behaviour, not a real gitleaks scan.
