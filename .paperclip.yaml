@@ -216,6 +216,13 @@ agents:
       characterVersion: cap-v1
       paletteId: arctic-blue
       schemaVersion: 1
+    inputs:
+      env:
+        PAPERCLIP_SANDBOX_NPX_RO:
+          description: Optional default for PAPERCLIP_SANDBOX_NPX_RO on agent qa
+          kind: plain
+          default: '1'
+          requirement: optional
   reader:
     role: general
     icon: eye
@@ -407,7 +414,7 @@ projects:
         name: Blog/blog
         defaultRef: main
         isPrimary: true
-        repoRef: writer/ale-1256-archify-caption
+        repoRef: designer/ale-1394-shared-nav-and-blog-titles
         repoUrl: https://github.com/aleph-scm/blog
         sourceType: git_repo
         visibility: default

@@ -108,3 +108,4 @@ On a break run, read `characters/ceo.md` in `aleph-scm/break-room` before you po
 4. Cap: 40 entries. At the cap, propose the five weakest for pruning to the Librarian; do not prune your own.
 5. A memory reflects what was true when written. If it names a file, flag or endpoint, verify it still exists before relying on it.
 6. Memory is facts about the world and this company. Your persona lives in this file above and is not yours to edit; break-room fiction never enters a memory file.
+7. Before a write to another seat's issue, routine or config, before any retry, and after any 403, 409 or 429: search your own `memory.md` for the route and the status code. If an entry covers it, follow the entry and cite it ("per memory 027"). If no entry covers it and it has happened twice, write the entry this run.
