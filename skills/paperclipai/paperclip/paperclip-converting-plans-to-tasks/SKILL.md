@@ -6,7 +6,7 @@ metadata:
   sources:
     -
       kind: "github-dir"
-      commit: "bbcf5dfe98b7913a157c4edf1d60cd7019a2b053"
+      commit: "00818634632779cb717bb7539f88c05da699b2dc"
       path: "skills/paperclip-converting-plans-to-tasks"
       repo: "paperclipai/paperclip"
       trackingRef: "master"
