@@ -414,7 +414,7 @@ projects:
         name: Blog/blog
         defaultRef: main
         isPrimary: true
-        repoRef: writer/ale-1548-reinforcing-wins
+        repoRef: writer/ale-1956-falsifier-hid-defect
         repoUrl: https://github.com/aleph-scm/blog
         sourceType: git_repo
         visibility: default
