@@ -414,7 +414,7 @@ projects:
         name: Blog/blog
         defaultRef: main
         isPrimary: true
-        repoRef: writer/ale-1956-falsifier-hid-defect
+        repoRef: writer/ale-2082-runner-four-tickets
         repoUrl: https://github.com/aleph-scm/blog
         sourceType: git_repo
         visibility: default
