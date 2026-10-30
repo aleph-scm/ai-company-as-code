@@ -6,7 +6,7 @@ metadata:
   sources:
     -
       kind: "github-dir"
-      commit: "b294de546bf9cd3a8578a7a66d7e8ec0eb939799"
+      commit: "a8e07500db68f187b19de83823eb7fabf1196021"
       path: "skills/slack"
       repo: "paperclipai/paperclip"
       trackingRef: "master"
