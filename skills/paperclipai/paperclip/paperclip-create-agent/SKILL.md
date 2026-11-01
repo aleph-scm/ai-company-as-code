@@ -6,7 +6,7 @@ metadata:
   sources:
     -
       kind: "github-dir"
-      commit: "4eaa435bf4225dd3dddd88f1094c17da739fbf7b"
+      commit: "b110271c9b2fd6dd5a1beb119e7f0663385df8b9"
       path: "skills/paperclip-create-agent"
       repo: "paperclipai/paperclip"
       trackingRef: "master"
