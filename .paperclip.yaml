@@ -414,7 +414,7 @@ projects:
         name: Blog/blog
         defaultRef: main
         isPrimary: true
-        repoRef: writer/ale-2082-runner-four-tickets
+        repoRef: writer/ale-2465-digest-pending-cards
         repoUrl: https://github.com/aleph-scm/blog
         sourceType: git_repo
         visibility: default
